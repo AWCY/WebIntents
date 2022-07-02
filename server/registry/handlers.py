@@ -51,7 +51,7 @@ class IndexerHandler(handlers_base.PageHandler):
     '''
     url = self.request.get("url")
     file = "indexer.html"
-    
+
     taskqueue.add(url = '/tasks/crawl', params = { "url": url })
 
     self.render_file(file, "registry")
@@ -64,7 +64,7 @@ class CrawlerTask(webapp2.RequestHandler):
   def post(self):
     url = self.request.get("url")
     data = urlfetch.fetch(url, deadline = 10)
-    
+
     history = IndexHistory()
     history.status_code = str(data.status_code)
     history.content = data.content
@@ -119,17 +119,18 @@ class SuggestionsHandler(webapp2.RequestHandler):
     query = db.Query(Intent).filter("action =", action)
 
     if type_major:
-      query.filter("type_major =", type_major) 
+      query.filter("type_major =", type_major)
     if type_minor is not None and type_minor != "*":
       query.filter("type_minor =", type_minor)
-    
+
     query.order("-rank")
 
     results = query.fetch(5)
-    
-    path = os.path.join(os.path.dirname(__file__), "results", "results.%s" % alt)
+
+    path = os.path.join(os.path.dirname(__file__), "results", f"results.{alt}")
     if os.path.exists(path):
-      template = jinja_environment.get_template(os.path.join("results", "results.%s" % alt))
+      template = jinja_environment.get_template(
+          os.path.join("results", f"results.{alt}"))
       self.response.out.write(template.render({ "intents" : results}))
     else:
       self.error(404)

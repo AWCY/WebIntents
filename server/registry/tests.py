@@ -85,8 +85,11 @@ class IntentParserTestFunction(unittest.TestCase):
     self.assertEqual(intents[0]["icon"], "http://webintents.org/fav2.ico")
 
   def test_multipleintents(self):
-    intentStr = "<intent \ntype='image/*' \naction='http://webintents.org/view' icon='fav2.ico' />\n"
-    intentStr += "<intent \ntype='image/*' \naction='http://webintents.org/pick' icon='fav2.ico' />"
+    intentStr = (
+        "<intent \ntype='image/*' \naction='http://webintents.org/view' icon='fav2.ico' />\n"
+        +
+        "<intent \ntype='image/*' \naction='http://webintents.org/pick' icon='fav2.ico' />"
+    )
     intents = self.parser.parse(intentStr, "http://webintents.org/")
 
     self.assertEqual(len(intents), 2)

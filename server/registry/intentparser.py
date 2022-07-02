@@ -14,13 +14,8 @@ class IntentParser():
   href_regex = "href=" + attribute_value_regex
  
   def _get_value(self, regex, text):
-    match = re.search(regex, text, flags = re.I) 
-    if match is None:
-      return None
-    else:
-      return match.groups(0)[0]
-
-    return None
+    match = re.search(regex, text, flags = re.I)
+    return None if match is None else match.groups(0)[0]
 
   def _parse_type(self, text):
     return self._get_value(IntentParser.type_regex, text)
@@ -51,7 +46,7 @@ class IntentParser():
       result = match.groups(0)[0]
       type = self._parse_type(result)
       type_major, type_minor = ("*", None)
-      
+
       favicon = self._parse_icon(result)
       if favicon is None:
         favicon = urlparse.urljoin(base, "favicon.ico")
@@ -60,7 +55,7 @@ class IntentParser():
 
       if type:
         type_major, type_minor = type.split("/")
-      
+
       href = urlparse.urljoin(base, self._parse_href(result))
       parsed_url = urlparse.urlparse(href) 
       intent = {

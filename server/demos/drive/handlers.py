@@ -338,18 +338,11 @@ class ServiceHandler(BaseDriveHandler):
     if service is None:
       return
     try:
-      # Requests are expected to pass the file_id query parameter.
-      file_id = self.request.get('file_id')
-      if file_id:
+      if file_id := self.request.get('file_id'):
         # Fetch the file metadata by making the service.files().get method of
         # the Drive API.
         f = service.files().get(id=file_id).execute()
-        downloadUrl = f.get('downloadUrl')
-        # If a download URL is provided in the file metadata, use it to make an
-        # authorized request to fetch the file ontent. Set this content in the
-        # data to return as the 'content' field. If there is no downloadUrl,
-        # just set empty content.
-        if downloadUrl:
+        if downloadUrl := f.get('downloadUrl'):
           resp, f['content'] = service._http.request(downloadUrl)
         else:
           f['content'] = ''
@@ -414,9 +407,7 @@ class ServiceHandler(BaseDriveHandler):
 
     The service can only ever retrieve the credentials from the session.
     """
-    # For the service, the session holds the credentials
-    creds = self.GetSessionCredentials()
-    if creds:
+    if creds := self.GetSessionCredentials():
       # If the session contains credentials, use them to create a Drive service
       # instance.
       return CreateService('drive', 'v1', creds)
