@@ -49,15 +49,15 @@ class ImageHandler(handlers_base.PageHandler):
   @run_as(ns = 'inspirationmator')
   def get(self, file):
     id, extension = handlers_base.parse_filename(file)
-    
+
     image_model = InspirationmatorImage.get_by_id(int(id))
-    
+
     content_type = handlers_base.get_content_type(extension)
-    self.response.headers['Content-Type'] = content_type 
+    self.response.headers['Content-Type'] = content_type
     self.response.headers['Cache-Control'] = 'max-age=3600, public, must-revalidate'
-    
+
     if content_type == "text/html":
-      url = "/image/%s.png" % (id)
+      url = f"/image/{id}.png"
       self.render_file("view.html", self.request.route.name, {"url": url, "title": id, "text_top": image_model.text_top, "text_bottom": image_model.text_bottom })
     else:
       self.response.out.write(image_model.image)
@@ -92,7 +92,8 @@ class ImageHandler(handlers_base.PageHandler):
     Create a new image.
     """
     image_data = self.request.get('image')
-    permission_key = ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for x in range(36))  
+    permission_key = ''.join(
+        random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for _ in range(36))  
 
     image_model = InspirationmatorImage()
     image_model.image = self.decode_image(image_data)
